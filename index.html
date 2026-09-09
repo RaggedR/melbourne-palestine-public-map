@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Melbourne Palestine organising — public map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #12151c;
+    --paper: #e8e0d0;
+    --mass: #d4a017;
+    --militant: #c45c26;
+    --anon: #6b3a4a;
+    --media: #3d7a6a;
+    --place: #5b6b8a;
+    --person: #cfc6b4;
+    --split: #e24b4b;
+    --pipe: #8a8376;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    display: grid;
+    grid-template-columns: minmax(300px, 360px) 1fr;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: "Source Serif 4", Georgia, serif;
+  }
+  aside {
+    background: #dcd3c2;
+    color: #1a1712;
+    padding: 24px 22px 28px;
+    overflow-y: auto;
+    border-right: 1px solid #b9ae98;
+  }
+  .kicker {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: #6a6358;
+    margin: 0 0 8px;
+  }
+  h1 { font-size: 26px; line-height: 1.15; margin: 0 0 12px; font-weight: 700; }
+  .lede { font-size: 14px; line-height: 1.5; margin: 0 0 14px; }
+  .notice {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10.5px;
+    line-height: 1.45;
+    border-top: 1px solid #b9ae98;
+    border-bottom: 1px solid #b9ae98;
+    padding: 10px 0;
+    margin: 0 0 16px;
+    color: #4a4338;
+  }
+  label {
+    display: block;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: #6a6358;
+    margin-bottom: 6px;
+  }
+  input[type="search"] {
+    width: 100%;
+    font: 14px "Source Serif 4", serif;
+    padding: 8px 10px;
+    border: 1px solid #b9ae98;
+    background: #f4eee2;
+    margin-bottom: 16px;
+  }
+  input:focus { outline: 2px solid #1a1712; outline-offset: 1px; }
+  h2 {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: #6a6358;
+    margin: 16px 0 8px;
+    font-weight: 500;
+  }
+  .legend, .pipe { list-style: none; padding: 0; margin: 0; }
+  .legend li, .pipe li {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; margin: 5px 0;
+  }
+  .swatch {
+    width: 10px; height: 10px; border-radius: 50%;
+    box-shadow: 0 0 0 2px #f4eee2, 0 0 0 3px currentColor;
+    flex-shrink: 0;
+  }
+  .pipe li { font-family: "IBM Plex Mono", monospace; font-size: 11px; color: #3d3830; }
+  .pipe .arrow { color: #8a7d68; margin: 0 2px; }
+  #detail { min-height: 160px; font-size: 14px; line-height: 1.45; }
+  #detail .name { font-size: 18px; margin: 0 0 4px; }
+  #detail .meta {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px; color: #6a6358; margin: 0 0 8px;
+  }
+  #detail a { color: #6b3a16; }
+  #detail ul { margin: 8px 0 0; padding-left: 18px; }
+  #detail a { color: #6b3a16; }
+  #detail .pages { list-style: none; padding: 0; margin: 12px 0 0; }
+  #detail .pages li { margin: 0; }
+  #detail .pages a {
+    display: block;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    padding: 7px 0;
+    border-bottom: 1px solid #b9ae98;
+    text-decoration: none;
+  }
+  #detail .pages a:hover { text-decoration: underline; }
+  .hint { color: #6a6358; font-style: italic; font-size: 13px; }
+  .node.has-link circle { stroke-width: 2px; }
+  .node.has-link text { text-decoration: underline; text-underline-offset: 2px; }
+  main { position: relative; min-height: 100vh; }
+  svg { width: 100%; height: 100%; display: block; }
+  .band text {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    letter-spacing: .18em;
+    fill: #5a564c;
+    text-transform: uppercase;
+  }
+  .link { fill: none; stroke-opacity: .7; }
+  .link.org { stroke: #c4a35a; }
+  .link.place { stroke: #5b6b8a; }
+  .link.media { stroke: #3d7a6a; }
+  .link.pipe { stroke: #8a8376; stroke-dasharray: 4 3; }
+  .link.split { stroke: var(--split); stroke-dasharray: 6 3; stroke-width: 2; }
+  .node circle { stroke: #e8e0d0; stroke-width: 1.4px; cursor: pointer; }
+  .node text {
+    fill: #e8e0d0;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    pointer-events: none;
+    paint-order: stroke;
+    stroke: #12151c;
+    stroke-width: 3px;
+  }
+  .is-dim { opacity: .14; }
+  footer {
+    position: absolute; right: 14px; bottom: 12px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px; color: #6e675c;
+    max-width: 46ch; text-align: right; pointer-events: none;
+  }
+  @media (max-width: 860px) {
+    body { grid-template-columns: 1fr; grid-template-rows: auto 72vh; }
+    aside { max-height: 46vh; }
+    footer { display: none; }
+  }
+</style>
+</head>
+<body>
+<aside>
+  <p class="kicker">Public accounts · layers · splits</p>
+  <h1>Melbourne Palestine organising</h1>
+  <p class="lede">Map of the public movement as described in open coverage: mass rallies, militant disruption, anonymous cells after the fact. Not a people-targeting graph. No Signal rooms.</p>
+  <p class="notice">Three layers, not one blob. FPM / FPC / APAN move thousands. Sit-Intifada, Disrupt Wars, Block the Dock, SAlt campuses do disruption in public. @forautonomydestroyaustralia is not a hangout. Hamad / 313 are not on this canvas.</p>
+  <label for="search">Find</label>
+  <input id="search" type="search" placeholder="Sit-Intifada, Mashni, dock…" autocomplete="off">
+  <h2>Node types</h2>
+  <ul class="legend">
+    <li><span class="swatch" style="color:var(--mass);background:var(--mass)"></span> Mass movement</li>
+    <li><span class="swatch" style="color:var(--militant);background:var(--militant)"></span> Militant public</li>
+    <li><span class="swatch" style="color:var(--anon);background:var(--anon)"></span> Anonymous illegal</li>
+    <li><span class="swatch" style="color:var(--media);background:var(--media)"></span> Media / directory</li>
+    <li><span class="swatch" style="color:var(--place);background:var(--place)"></span> Place / hub</li>
+    <li><span class="swatch" style="color:var(--person);background:var(--person)"></span> Named public figure</li>
+    <li><span class="swatch" style="color:var(--split);background:var(--split)"></span> Split / conflict (dashed red)</li>
+  </ul>
+  <h2>Pipeline (public)</h2>
+  <ul class="pipe">
+    <li>Instagram post <span class="arrow">→</span> WhatsApp / IG broadcast</li>
+    <li>Signal for specific actions (gated)</li>
+    <li>IRL: State Library / Parliament / docks / campus</li>
+    <li>After: Infoshop, Trades Hall, 83 Sydney Rd</li>
+    <li>Facebook still used in the suburbs</li>
+    <li>X is secondary</li>
+  </ul>
+  <h2>Selected</h2>
+  <div id="detail"><p class="hint">Click a node to open its public page (new tab) and see the blurb. Drag to pin. Scroll to zoom.</p></div>
+</aside>
+<main>
+  <svg id="canvas" aria-label="Public organising graph"></svg>
+  <footer>Compiled from the public-account map you supplied. No extra scraping. No private chats.</footer>
+</main>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script>
+const LAYER = { mass: 0.18, militant: 0.48, anon: 0.82, media: 0.32, place: 0.62, person: 0.40 };
+
+const ig = h => ({ label: "Instagram " + h, href: "https://www.instagram.com/" + h.replace(/^@/, "") + "/" });
+const nodes = [
+  { id: "fpm", label: "Free Palestine Melbourne", type: "mass", handle: "@freepalestinemelb / @fpmelbourne",
+    blurb: "Oldest Melbourne org. Website freepalestinevic.org. Facebook, X, TikTok, YouTube as @fpmelbourne. Mass Sunday-rally tradition; more establishment than FPC Naarm.",
+    pages: [ig("freepalestinemelb"), { label: "Website freepalestinevic.org", href: "https://freepalestinevic.org/" }, { label: "Instagram @fpmelbourne", href: "https://www.instagram.com/fpmelbourne/" }] },
+  { id: "fpc", label: "FPC Naarm", type: "mass", handle: "@freepalestinecoalition.naarm",
+    blurb: "Coalition that ran weekly Sunday State Library rallies. More anti-imperialist / smash-Zionism than FPM. WhatsApp + Instagram broadcast lists in the bio. Still posts the calendar. Elbit Out of Victoria is their initiative.",
+    pages: [ig("freepalestinecoalition.naarm")] },
+  { id: "apan", label: "APAN", type: "mass", handle: "@apan4palestine",
+    blurb: "Australia Palestine Advocacy Network. National lobbying. The respectable face. Nasser Mashni.",
+    pages: [ig("apan4palestine"), { label: "APAN website", href: "https://apan.org.au/" }] },
+  { id: "mashni", label: "Nasser Mashni", type: "person", handle: "APAN · 3CR",
+    blurb: "Public face of APAN. Presents Palestine Remembered on 3CR Saturdays 9:30am.",
+    pages: [{ label: "APAN", href: "https://apan.org.au/" }, { label: "3CR Palestine Remembered", href: "https://www.3cr.org.au/palestine" }] },
+
+  { id: "sit", label: "Sit-Intifada", type: "militant", handle: "@thesitintifada",
+    blurb: "Parliament House steps occupation from Oct 2023. Coalition of Islamic, socialist, union, revolutionary groups. Sky / Australian treated them as the violent fringe of Land Forces. Public Google calendar of Melbourne actions. Age: part of the fringe that hijacks Sunday rallies.",
+    pages: [ig("thesitintifada"), { label: "Public actions calendar (sheet)", href: "https://docs.google.com/spreadsheets/d/1unxzAu_VqzglUYz8_MGg8UVfpiI4TLHk7YV4YSW38_s/edit" }] },
+  { id: "disrupt", label: "Disrupt Wars", type: "militant", handle: "@disruptwars",
+    blurb: "Land Forces 2024 disruption (thousands, rubber bullets, 82 arrests). A15 economic-blockade coordination. Action details via Instagram DM (gated). Age: Sunday-rally fringe with Sit-Intifada / SAlt.",
+    pages: [ig("disruptwars")] },
+  { id: "btd", label: "Block the Dock", type: "militant", handle: "@blockthedock",
+    blurb: "Webb Dock / ZIM shipping blockades, hunger strikes, lock-ons. Publicly attacked FPM as an embarrassment and “90% white.” More confrontational than the Sunday crowd.",
+    pages: [ig("blockthedock")] },
+  { id: "sfp", label: "Students for Palestine", type: "militant", handle: "@studentsforpalestineaus",
+    blurb: "National student banner. Built by Socialist Alternative in 2008–09; other left groups and some Palestinian organisers treat it as a SAlt front.",
+    pages: [ig("studentsforpalestineaus")] },
+  { id: "sfp_unimelb", label: "SFP UniMelb", type: "militant", handle: "@studentsforpalestineunimelb",
+    blurb: "Campus chapter. Arts West occupation (“Mahmoud’s Hall”) sat in this SAlt student layer.",
+    pages: [ig("studentsforpalestineunimelb")] },
+  { id: "unimelb4p", label: "UniMelb for Palestine", type: "militant", handle: "@unimelbforpalestine",
+    blurb: "Campus account in the same student layer.",
+    pages: [ig("unimelbforpalestine")] },
+  { id: "monash4p", label: "Monash for Palestine", type: "militant", handle: "@monash4palestine",
+    blurb: "Campus account.",
+    pages: [ig("monash4palestine")] },
+  { id: "rmit_sfp", label: "RMIT Students for Palestine", type: "militant", handle: "@rmit_students_for_palestine",
+    blurb: "Campus account.",
+    pages: [ig("rmit_students_for_palestine")] },
+  { id: "salt", label: "Socialist Alternative", type: "militant", handle: "Vic Socialists · @solidarity_melbourne",
+    blurb: "Treats Palestine as a recruitment pipeline. “GLOBALISE THE INTIFADA.” Built Students for Palestine. Red Flag is the house paper. Other left groups split with them.",
+    pages: [ig("solidarity_melbourne"), { label: "Socialist Alternative", href: "https://socialistalternative.org.au/" }] },
+  { id: "duff", label: "Jasmine Duff", type: "person", handle: "SAlt",
+    blurb: "Led “Long live the intifada” / “Death to the IDF” chants at the Jan 2026 State Library rally. Public SAlt figure.",
+    pages: [ig("solidarity_melbourne")] },
+  { id: "ss4p", label: "School Students for Palestine", type: "militant", handle: "@schoolstudents4palestine",
+    blurb: "High-school organising. Public meetings advertised Mondays 4pm, 83 Sydney Rd, Brunswick.",
+    pages: [ig("schoolstudents4palestine")] },
+  { id: "elbit", label: "Elbit Out of Victoria", type: "militant", handle: "linktr.ee/elbitoutofvictoria",
+    blurb: "FPC Naarm initiative. Targets Elbit, EOS, Future Fund, Rosebank Engineering (F-35 parts, Bayswater).",
+    pages: [{ label: "Linktree elbitoutofvictoria", href: "https://linktr.ee/elbitoutofvictoria" }] },
+  { id: "aman", label: "AMAN", type: "militant", handle: "@aman_antimilitarismnetwork",
+    blurb: "Anti-Militarism Action Network. Webb Dock / Elbit blockades.",
+    pages: [ig("aman_antimilitarismnetwork")] },
+  { id: "redflag", label: "Red Flag", type: "media", handle: "SAlt paper",
+    blurb: "Socialist Alternative house paper. Event listings and internal debate.",
+    pages: [{ label: "redflag.org.au", href: "https://redflag.org.au/" }] },
+  { id: "greenleft", label: "Green Left", type: "media", handle: "event listings",
+    blurb: "Left paper that lists events and carries the SAlt-vs-everyone argument.",
+    pages: [{ label: "greenleft.org.au", href: "https://www.greenleft.org.au/" }] },
+  { id: "libcrew", label: "Liberation Crew", type: "militant", handle: "named in The Australian",
+    blurb: "Turf war with Sit-Intifada after Land Forces. Sit-Intifada was blamed for horse-irritant and manure attacks. Thin public file — a split, not a full org profile.",
+    pages: [] },
+
+  { id: "fada", label: "forautonomydestroyaustralia", type: "anon", handle: "@forautonomydestroyaustralia",
+    blurb: "Palestine Action copycat. Smash-and-paint on Toll sites (Truganina, Campbellfield, Westmeadows). Captions: Death to Israel / Australia, glory to the martyrs. Manifesto at tolldeath.noblogs.org. Described themselves as a loose network over encrypted messaging. Not a public chat. Not a community.",
+    pages: [ig("forautonomydestroyaustralia"), { label: "Manifesto tolldeath.noblogs.org", href: "https://tolldeath.noblogs.org/" }] },
+  { id: "lovitt", label: "Lovitt Technologies arson", type: "anon", handle: "Jul 2025 · AFP/ASIO",
+    blurb: "Melbourne F-35 supplier. Claim video: “Stop arming Israel or else.” Treated as possible far-left terrorism. Same style as the anonymous layer, not a public group.",
+    pages: [] },
+
+  { id: "cr3", label: "3CR Palestine Remembered", type: "media", handle: "855AM · Sat 9:30am",
+    blurb: "Movement’s own radio. Mashni presents. 3CR also records Sunday rallies.",
+    pages: [{ label: "3CR Palestine Remembered", href: "https://www.3cr.org.au/palestine" }] },
+  { id: "toolkit", label: "Palestine Toolkit", type: "media", handle: "palestinetoolkit.org",
+    blurb: "The map they give newcomers: join local protests and actions.",
+    pages: [{ label: "Join local protests", href: "https://palestinetoolkit.org/mobilise-outside-home/join-local-protests-and-actions/" }] },
+
+  { id: "slv", label: "State Library Sundays", type: "place", handle: "Sun 12pm · physical hub",
+    blurb: "Weekly rally hub for two years. Paused after Oct 2025 ceasefire, returned for Herzog, Nakba Day, etc. FPC still posts the calendar. Age: a small fringe often hijacks these into more aggressive tactics (e.g. Miznon).",
+    pages: [{ label: "Map: State Library Victoria", href: "https://www.google.com/maps/search/?api=1&query=State+Library+Victoria" }] },
+  { id: "parl", label: "Parliament House steps", type: "place", handle: "Sit-Intifada occupation",
+    blurb: "Sit-Intifada’s public occupation site from Oct 2023.",
+    pages: [{ label: "Map: Parliament House Melbourne", href: "https://www.google.com/maps/search/?api=1&query=Parliament+House+Melbourne" }] },
+  { id: "infoshop", label: "IRL Infoshop Coburg", type: "place", handle: "144 Sydney Rd",
+    blurb: "Public afterparty / tea-debrief 4–6pm after Sunday rallies.",
+    pages: [{ label: "Map: 144 Sydney Rd Coburg", href: "https://www.google.com/maps/search/?api=1&query=144+Sydney+Rd+Coburg+VIC" }] },
+  { id: "brunswick83", label: "83 Sydney Rd Brunswick", type: "place", handle: "Mon 4pm",
+    blurb: "Advertised meeting place for School Students for Palestine.",
+    pages: [{ label: "Map: 83 Sydney Rd Brunswick", href: "https://www.google.com/maps/search/?api=1&query=83+Sydney+Rd+Brunswick+VIC" }] },
+  { id: "dock", label: "Webb Dock", type: "place", handle: "ZIM / Block the Dock",
+    blurb: "Shipping blockades, hunger strikes, lock-ons. Also AMAN.",
+    pages: [{ label: "Map: Webb Dock Melbourne", href: "https://www.google.com/maps/search/?api=1&query=Webb+Dock+Melbourne" }] },
+  { id: "trades", label: "Trades Hall", type: "place", handle: "in-person hub",
+    blurb: "Named in the public pipeline as an in-person node after rallies / actions.",
+    pages: [{ label: "Map: Trades Hall Melbourne", href: "https://www.google.com/maps/search/?api=1&query=Trades+Hall+Carlton+VIC" }] },
+  { id: "amir", label: "Nachshon Amir", type: "person", handle: "named in FPM–BTD split",
+    blurb: "Former IDF soldier reported as organising with FPM. Block the Dock objected. A split fact, not a leadership chart.",
+    pages: [] }
+];
+
+const links = [
+  { source: "apan", target: "mashni", kind: "org", label: "public face" },
+  { source: "mashni", target: "cr3", kind: "media", label: "presents" },
+  { source: "fpm", target: "slv", kind: "place", label: "mass rallies" },
+  { source: "fpc", target: "slv", kind: "place", label: "ran weekly rallies / calendar" },
+  { source: "fpc", target: "elbit", kind: "org", label: "initiative of" },
+  { source: "fpc", target: "infoshop", kind: "place", label: "Sunday debrief" },
+  { source: "fpm", target: "infoshop", kind: "place", label: "Sunday debrief" },
+  { source: "cr3", target: "slv", kind: "media", label: "records rallies" },
+  { source: "toolkit", target: "fpm", kind: "media", label: "directory" },
+  { source: "toolkit", target: "fpc", kind: "media", label: "directory" },
+
+  { source: "sit", target: "parl", kind: "place", label: "occupation" },
+  { source: "sit", target: "slv", kind: "pipe", label: "Age: hijack fringe" },
+  { source: "disrupt", target: "slv", kind: "pipe", label: "Age: hijack fringe" },
+  { source: "salt", target: "slv", kind: "pipe", label: "Age: hijack fringe" },
+  { source: "btd", target: "dock", kind: "place", label: "blockades" },
+  { source: "aman", target: "dock", kind: "place", label: "blockades" },
+  { source: "aman", target: "elbit", kind: "org", label: "Elbit blockades" },
+  { source: "salt", target: "sfp", kind: "org", label: "built / still runs" },
+  { source: "sfp", target: "sfp_unimelb", kind: "org", label: "campus chapter" },
+  { source: "sfp", target: "unimelb4p", kind: "org", label: "campus chapter" },
+  { source: "sfp", target: "monash4p", kind: "org", label: "campus chapter" },
+  { source: "sfp", target: "rmit_sfp", kind: "org", label: "campus chapter" },
+  { source: "salt", target: "duff", kind: "org", label: "public figure" },
+  { source: "duff", target: "slv", kind: "place", label: "Jan 2026 chants" },
+  { source: "salt", target: "redflag", kind: "media", label: "house paper" },
+  { source: "ss4p", target: "brunswick83", kind: "place", label: "advertised meetings" },
+  { source: "fpc", target: "sit", kind: "pipe", label: "same militant-public edge" },
+  { source: "disrupt", target: "sit", kind: "org", label: "Land Forces / disruption layer" },
+  { source: "greenleft", target: "salt", kind: "media", label: "covers the split" },
+  { source: "slv", target: "infoshop", kind: "pipe", label: "afterparty" },
+  { source: "slv", target: "trades", kind: "pipe", label: "pipeline hub" },
+
+  { source: "fpm", target: "btd", kind: "split", label: "BTD: embarrassment, 90% white" },
+  { source: "fpm", target: "amir", kind: "org", label: "reported as organising with FPM" },
+  { source: "btd", target: "amir", kind: "split", label: "objected to former IDF organiser" },
+  { source: "sit", target: "libcrew", kind: "split", label: "turf war after Land Forces" },
+  { source: "salt", target: "fpc", kind: "split", label: "SAlt vs other organisers" },
+  { source: "salt", target: "apan", kind: "split", label: "fringe vs respectable face" },
+
+  { source: "fada", target: "lovitt", kind: "org", label: "same anonymous style, not a hangout" }
+];
+
+const colour = {
+  mass: "#d4a017", militant: "#c45c26", anon: "#6b3a4a",
+  media: "#3d7a6a", place: "#5b6b8a", person: "#cfc6b4"
+};
+
+const svg = d3.select("#canvas");
+const W = () => svg.node().clientWidth;
+const H = () => svg.node().clientHeight;
+svg.attr("viewBox", [0, 0, W(), H()]);
+
+const bands = svg.append("g");
+["mass movement", "militant public", "anonymous / after the fact"].forEach((t, i) => {
+  const y = [0.18, 0.48, 0.82][i] * H();
+  bands.append("line").attr("x1", 24).attr("x2", W() - 24).attr("y1", y).attr("y2", y)
+    .attr("stroke", "#2a2e38").attr("stroke-dasharray", "2 6");
+  bands.append("text").attr("x", 28).attr("y", y - 8).text(t);
+});
+
+const g = svg.append("g");
+svg.call(d3.zoom().scaleExtent([0.3, 4]).on("zoom", e => g.attr("transform", e.transform)));
+
+const link = g.append("g").selectAll("path").data(links).join("path")
+  .attr("class", d => "link " + d.kind)
+  .attr("stroke-width", d => d.kind === "split" ? 2 : 1.5);
+
+const node = g.append("g").selectAll("g").data(nodes).join("g")
+  .attr("class", d => "node" + (d.pages && d.pages.length ? " has-link" : ""));
+node.append("circle")
+  .attr("r", d => d.type === "mass" || d.id === "sit" || d.id === "salt" ? 12 : 8)
+  .attr("fill", d => colour[d.type]);
+node.append("text").attr("x", 14).attr("y", 4).text(d => d.label + (d.pages && d.pages.length ? " ↗" : ""));
+
+const sim = d3.forceSimulation(nodes)
+  .force("link", d3.forceLink(links).id(d => d.id).distance(d => d.kind === "split" ? 140 : 78).strength(0.55))
+  .force("charge", d3.forceManyBody().strength(-280))
+  .force("x", d3.forceX(W() / 2).strength(0.06))
+  .force("y", d3.forceY(d => (LAYER[d.type] || 0.5) * H()).strength(0.35))
+  .force("collision", d3.forceCollide().radius(34));
+
+let dragged = false;
+node.call(d3.drag()
+  .on("start", (e, d) => { dragged = false; if (!e.active) sim.alphaTarget(0.2).restart(); d.fx = d.x; d.fy = d.y; })
+  .on("drag", (e, d) => { dragged = true; d.fx = e.x; d.fy = e.y; })
+  .on("end", (e, d) => { if (!e.active) sim.alphaTarget(0); }));
+
+function nid(x) { return typeof x === "object" ? x.id : x; }
+function neighbours(id) {
+  const set = new Set([id]);
+  links.forEach(l => {
+    const s = nid(l.source), t = nid(l.target);
+    if (s === id) set.add(t);
+    if (t === id) set.add(s);
+  });
+  return set;
+}
+
+function show(d) {
+  const rel = links.filter(l => nid(l.source) === d.id || nid(l.target) === d.id);
+  const pages = (d.pages || []).map(p =>
+    `<li><a href="${p.href}" target="_blank" rel="noopener noreferrer">${p.label}</a></li>`
+  ).join("");
+  document.getElementById("detail").innerHTML = `
+    <p class="name">${d.label}</p>
+    <p class="meta">${d.type} · ${d.handle}</p>
+    <p>${d.blurb}</p>
+    ${pages ? `<ul class="pages">${pages}</ul>` : `<p class="hint">No public page in the supplied map.</p>`}
+    <ul>${rel.map(l => {
+      const otherId = nid(l.source) === d.id ? nid(l.target) : nid(l.source);
+      const other = nodes.find(n => n.id === otherId).label;
+      const tag = l.kind === "split" ? "split" : l.label;
+      return `<li><em>${tag}</em> — ${other}</li>`;
+    }).join("")}</ul>`;
+  const keep = neighbours(d.id);
+  node.classed("is-dim", n => !keep.has(n.id));
+  link.classed("is-dim", l => !(nid(l.source) === d.id || nid(l.target) === d.id));
+}
+
+function openPrimary(d) {
+  if (d.pages && d.pages[0]) window.open(d.pages[0].href, "_blank", "noopener,noreferrer");
+}
+
+node.on("click", (e, d) => {
+  e.stopPropagation();
+  if (dragged) return;
+  show(d);
+  openPrimary(d);
+});
+svg.on("click", () => {
+  node.classed("is-dim", false);
+  link.classed("is-dim", false);
+  document.getElementById("detail").innerHTML = `<p class="hint">Click a node to open its public page (new tab) and see the blurb. Drag to pin. Scroll to zoom.</p>`;
+});
+
+document.getElementById("search").addEventListener("input", e => {
+  const q = e.target.value.trim().toLowerCase();
+  if (!q) { node.classed("is-dim", false); link.classed("is-dim", false); return; }
+  const hit = nodes.filter(n =>
+    n.label.toLowerCase().includes(q) || n.handle.toLowerCase().includes(q) || n.blurb.toLowerCase().includes(q));
+  const keep = new Set();
+  hit.forEach(n => neighbours(n.id).forEach(id => keep.add(id)));
+  node.classed("is-dim", n => !keep.has(n.id));
+  link.classed("is-dim", l => !hit.some(n => n.id === nid(l.source) || n.id === nid(l.target)));
+  if (hit.length === 1) show(hit[0]);
+});
+
+sim.on("tick", () => {
+  link.attr("d", d => {
+    const mx = (d.source.x + d.target.x) / 2, my = (d.source.y + d.target.y) / 2;
+    return `M${d.source.x},${d.source.y} Q${mx},${my} ${d.target.x},${d.target.y}`;
+  });
+  node.attr("transform", d => `translate(${d.x},${d.y})`);
+});
+
+window.addEventListener("resize", () => {
+  svg.attr("viewBox", [0, 0, W(), H()]);
+  bands.selectAll("line").attr("x2", W() - 24);
+  sim.force("x", d3.forceX(W() / 2).strength(0.06))
+     .force("y", d3.forceY(d => (LAYER[d.type] || 0.5) * H()).strength(0.35))
+     .alpha(0.4).restart();
+});
+</script>
+</body>
+</html>
