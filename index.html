@@ -17,6 +17,7 @@
     --media: #3d7a6a;
     --place: #5b6b8a;
     --person: #cfc6b4;
+    --local: #8a9a4a;
     --split: #e24b4b;
     --pipe: #8a8376;
   }
@@ -162,12 +163,13 @@
   <p class="kicker">Public accounts · layers · splits</p>
   <h1>Melbourne Palestine organising</h1>
   <p class="lede">Map of the public movement as described in open coverage: mass rallies, militant disruption, anonymous cells after the fact. Not a people-targeting graph. No Signal rooms.</p>
-  <p class="notice">Three layers, not one blob. FPM / FPC / APAN move thousands. Sit-Intifada, Disrupt Wars, Block the Dock, SAlt campuses do disruption in public. @forautonomydestroyaustralia is not a hangout. Hamad / 313 are not on this canvas.</p>
+  <p class="notice">CBD mass + militant + anonymous cells, plus suburban locals, unions, and Jewish anti-Zionist groups from FPM’s directory and Palestine Toolkit. Not a follower scrape. Hamad / 313 are not on this canvas.</p>
   <label for="search">Find</label>
   <input id="search" type="search" placeholder="Sit-Intifada, Mashni, dock…" autocomplete="off">
   <h2>Node types</h2>
   <ul class="legend">
     <li><span class="swatch" style="color:var(--mass);background:var(--mass)"></span> Mass movement</li>
+    <li><span class="swatch" style="color:var(--local);background:var(--local)"></span> Suburban / local / union</li>
     <li><span class="swatch" style="color:var(--militant);background:var(--militant)"></span> Militant public</li>
     <li><span class="swatch" style="color:var(--anon);background:var(--anon)"></span> Anonymous illegal</li>
     <li><span class="swatch" style="color:var(--media);background:var(--media)"></span> Media / directory</li>
@@ -193,7 +195,7 @@
 </main>
 <script src="https://d3js.org/d3.v7.min.js"></script>
 <script>
-const LAYER = { mass: 0.18, militant: 0.48, anon: 0.82, media: 0.32, place: 0.62, person: 0.40 };
+const LAYER = { mass: 0.16, militant: 0.50, anon: 0.84, media: 0.30, place: 0.64, person: 0.38, local: 0.28 };
 
 const ig = h => ({ label: "Instagram " + h, href: "https://www.instagram.com/" + h.replace(/^@/, "") + "/" });
 const nodes = [
@@ -215,6 +217,64 @@ const nodes = [
   { id: "glanz", label: "David Glanz", type: "person", handle: "AZA organiser · named in press",
     blurb: "Named in Age/SMH as Anti-Zionism Australia organiser. FPM has also listed him as Solidarity / RAC / Free Palestine Melbourne.",
     pages: [{ label: "Anti-Zionism Australia", href: "https://www.antizionismaustralia.org/" }] },
+  { id: "saif", label: "Mai Saif", type: "person", handle: "FPM chairperson",
+    blurb: "Named in Green Left as chairperson of Free Palestine Melbourne and a leading Palestinian activist in Victoria.",
+    pages: [{ label: "Free Palestine Melbourne", href: "https://www.freepalestinevic.org/" }] },
+
+  { id: "ljc", label: "Loud Jew Collective", type: "mass", handle: "@loudjewcollective",
+    blurb: "Melbourne anti-Zionist Jewish collective (from 2021). Sunday-rally bloc. Site loudjewcollective.org. Palestine Toolkit lists them for Naarm. Jordy Silverstein has spoken at FPM rallies; also on APAN executive (public bios).",
+    pages: [ig("loudjewcollective"), { label: "loudjewcollective.org", href: "https://www.loudjewcollective.org/" }] },
+  { id: "jaf", label: "Jews Against Fascism", type: "mass", handle: "@jewsagainstfash",
+    blurb: "Sunday-rally Jewish bloc. Toolkit: meet SE corner of SLV at the Redmond Barry statue. Distinct from Loud Jew Collective.",
+    pages: [ig("jewsagainstfash")] },
+  { id: "jca", label: "Jewish Council of Australia", type: "mass", handle: "@jewishcouncil",
+    blurb: "Founded 2024, HQ Melbourne. Progressive/non-Zionist Jewish advocacy. Executive officer Sarah Schwartz (Wikipedia). AZA posts have pointed people here alongside APAN.",
+    pages: [ig("jewishcouncil"), { label: "jewishcouncil.com.au", href: "https://www.jewishcouncil.com.au/" }] },
+  { id: "mums", label: "Mums for Palestine", type: "local", handle: "@mumsforpalestine",
+    blurb: "Melbourne-founded Nov 2023. Fundraising, petitions, podcast. Toolkit and Israeli MFA paper both list it as a prominent Melbourne group (~11k IG).",
+    pages: [ig("mumsforpalestine")] },
+  { id: "u4p", label: "Unionists for Palestine", type: "local", handle: "@unionistsforpalestine",
+    blurb: "National rank-and-file aggregate; Vic chapter at Trades Hall. Directory lists ANMF, ASU, CPSU, NTEU, teachers, healthcare, RAFFWU Vic groups.",
+    pages: [ig("unionistsforpalestine"), { label: "unionistsforpalestine.com.au", href: "https://www.unionistsforpalestine.com.au/groups-directory" }] },
+  { id: "t4p", label: "Teachers for Palestine VIC", type: "local", handle: "@teachers4palestine_vic",
+    blurb: "On the Palestine Toolkit Naarm list. Rank-and-file teachers; Green Left noted teachers as among the most active unionists.",
+    pages: [ig("teachers4palestine_vic")] },
+  { id: "asu4p", label: "ASU Members for Palestine", type: "local", handle: "@asu_action4palestine",
+    blurb: "Victorian ASU Palestine faction. The Australian (Jan 2026) reported leaked docs on a two-year campaign targeting Israel-linked super and employers, organised via Trades Hall.",
+    pages: [ig("asu_action4palestine")] },
+  { id: "bds", label: "BDS Australia", type: "mass", handle: "@bdsinaustralia",
+    blurb: "National BDS campaign. FPM’s ‘what you can do’ page points here for boycott. Not a Melbourne-only org but used by the Naarm movement.",
+    pages: [ig("bdsinaustralia"), { label: "bdsaustralia.net.au", href: "https://bdsaustralia.net.au/" }] },
+  { id: "wdf", label: "Watermelon Defence Fund", type: "local", handle: "@watermelondefence",
+    blurb: "Registered charity providing legal support to Palestinian activists in Australia. Israeli MFA paper listed it as Melbourne-based, founded mid-2024.",
+    pages: [ig("watermelondefence")] },
+  { id: "mals", label: "Melbourne Activist Legal Support", type: "local", handle: "@melbactivistlegal",
+    blurb: "Legal observers at rallies including Land Forces and Palestinian Prisoners’ Day. Adjacent infrastructure, not a Palestine-only org.",
+    pages: [ig("melbactivistlegal")] },
+  { id: "darebin", label: "Darebin 4 Palestine", type: "local", handle: "@darebin4palestine",
+    blurb: "Northern-suburbs local. FPM directory. Hosted 2026 planning day with Hume and Merri-bek. Council flag/motion campaign.",
+    pages: [ig("darebin4palestine"), { label: "Linktree", href: "https://linktr.ee/darebin4palestine" }] },
+  { id: "merribek", label: "Merri-bek 4 Palestine", type: "local", handle: "@merribek4palestine",
+    blurb: "Northern suburbs / Infoshop catchment. FPM directory. Joint planning with Darebin and Hume.",
+    pages: [ig("merribek4palestine")] },
+  { id: "hume", label: "Hume for Palestine", type: "local", handle: "@humeforpalestine",
+    blurb: "Northern suburbs local. Broadmeadows town-hall mobilisations. FPM directory.",
+    pages: [ig("humeforpalestine")] },
+  { id: "dandenong", label: "FP Dandenong / SE Action", type: "local", handle: "@freepalestineda",
+    blurb: "South-east locals. Linktree also advertised A.W. Bell Signal (gated — not mapped). Knox, Yarra Ranges sit nearby.",
+    pages: [ig("freepalestineda"), { label: "Linktree", href: "https://linktr.ee/freepalestineda" }] },
+  { id: "knox", label: "Knox for Palestine", type: "local", handle: "@knox4palestine",
+    blurb: "South-east local. Public statement against Herzog visit. FPM directory.",
+    pages: [ig("knox4palestine")] },
+  { id: "banyule", label: "Banyule Palestine Action Group", type: "local", handle: "@banyulepalestineactiongroup",
+    blurb: "North-east local. Fundraising for Gaza families plus council-motion work. FPM directory.",
+    pages: [ig("banyulepalestineactiongroup"), { label: "Linktree", href: "https://linktr.ee/banyulepalestineactiongroup" }] },
+  { id: "mcc4p", label: "Melbourne for Palestine", type: "local", handle: "@melbourne_for_palestine",
+    blurb: "City of Melbourne council-pressure group. FPM directory / Linktree melbourneforpalestine.",
+    pages: [ig("melbourne_for_palestine"), { label: "Linktree", href: "https://linktr.ee/melbourneforpalestine" }] },
+  { id: "fpdir", label: "FPM local-groups directory", type: "media", handle: "freepalestinevic.org/what-can-you-do",
+    blurb: "FPM’s own list of Victorian locals: Brimbank, Hobsons Bay, Maribyrnong, Moonee Valley, Nillumbik, Port Phillip, Whitehorse, Whittlesea, Wyndham, Yarra Ranges, Sunbury, Geelong, Bendigo, Ballarat, and more. Those not drawn as nodes live on this page.",
+    pages: [{ label: "What can you do — local groups", href: "https://www.freepalestinevic.org/what-can-you-do/" }] },
 
   { id: "sit", label: "Sit-Intifada", type: "militant", handle: "@thesitintifada",
     blurb: "Parliament House steps occupation from Oct 2023. Coalition of Islamic, socialist, union, revolutionary groups. Sky / Australian treated them as the violent fringe of Land Forces. Public Google calendar of Melbourne actions. Age: part of the fringe that hijacks Sunday rallies.",
@@ -303,6 +363,33 @@ const nodes = [
 ];
 
 const links = [
+  { source: "fpm", target: "saif", kind: "org", label: "chairperson" },
+  { source: "ljc", target: "slv", kind: "place", label: "Sunday-rally bloc" },
+  { source: "ljc", target: "apan", kind: "org", label: "members on APAN executive" },
+  { source: "ljc", target: "aza", kind: "org", label: "Jewish anti-Zionist scene" },
+  { source: "jaf", target: "slv", kind: "place", label: "weekly Jewish bloc at SLV" },
+  { source: "jca", target: "aza", kind: "org", label: "AZA points people here" },
+  { source: "jca", target: "ljc", kind: "org", label: "same Jewish anti-Zionist lane" },
+  { source: "mums", target: "fpm", kind: "org", label: "mass-movement adjacent" },
+  { source: "u4p", target: "trades", kind: "place", label: "Vic organising at Trades Hall" },
+  { source: "t4p", target: "u4p", kind: "org", label: "Vic teachers chapter" },
+  { source: "asu4p", target: "u4p", kind: "org", label: "ASU faction" },
+  { source: "asu4p", target: "trades", kind: "place", label: "VTHC loading-bay organising (press)" },
+  { source: "bds", target: "fpm", kind: "org", label: "FPM points people here" },
+  { source: "bds", target: "elbit", kind: "org", label: "boycott / Elbit campaigns" },
+  { source: "wdf", target: "mals", kind: "org", label: "legal support layer" },
+  { source: "mals", target: "slv", kind: "place", label: "legal observers at rallies" },
+  { source: "darebin", target: "merribek", kind: "org", label: "northern planning day 2026" },
+  { source: "hume", target: "merribek", kind: "org", label: "northern planning day 2026" },
+  { source: "darebin", target: "fpm", kind: "org", label: "FPM directory / Saif spoke" },
+  { source: "dandenong", target: "knox", kind: "org", label: "south-east locals" },
+  { source: "dandenong", target: "fpm", kind: "org", label: "FPM directory" },
+  { source: "banyule", target: "fpm", kind: "org", label: "FPM directory" },
+  { source: "mcc4p", target: "fpm", kind: "org", label: "FPM directory" },
+  { source: "fpdir", target: "fpm", kind: "media", label: "FPM’s local-group list" },
+  { source: "fpdir", target: "darebin", kind: "media", label: "lists this local" },
+  { source: "fpdir", target: "dandenong", kind: "media", label: "lists this local" },
+  { source: "infoshop", target: "merribek", kind: "place", label: "Coburg catchment" },
   { source: "aza", target: "glanz", kind: "org", label: "named organiser" },
   { source: "aza", target: "apan", kind: "org", label: "publicly points people to APAN actions" },
   { source: "aza", target: "slv", kind: "place", label: "speak-outs / cancelled Bondi-weekend rally" },
@@ -354,7 +441,7 @@ const links = [
 
 const colour = {
   mass: "#d4a017", militant: "#c45c26", anon: "#6b3a4a",
-  media: "#3d7a6a", place: "#5b6b8a", person: "#cfc6b4"
+  media: "#3d7a6a", place: "#5b6b8a", person: "#cfc6b4", local: "#8a9a4a"
 };
 
 const svg = d3.select("#canvas");
