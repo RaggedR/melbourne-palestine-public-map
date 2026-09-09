@@ -209,6 +209,12 @@ const nodes = [
   { id: "mashni", label: "Nasser Mashni", type: "person", handle: "APAN · 3CR",
     blurb: "Public face of APAN. Presents Palestine Remembered on 3CR Saturdays 9:30am.",
     pages: [{ label: "APAN", href: "https://apan.org.au/" }, { label: "3CR Palestine Remembered", href: "https://www.3cr.org.au/palestine" }] },
+  { id: "aza", label: "Anti-Zionism Australia", type: "mass", handle: "@anti.zionism.australia",
+    blurb: "Melbourne-initiated collective (site: antizionismaustralia.org). Presents as Jewish-started, non-denominational anti-Zionist. Public speak-outs at State Library and Parliament (including after Bondi, against the Segal report / IHRA). Herald Sun called them fringe. Not Sit-Intifada: education/mobilisation, not dock lock-ons. Was missing because it was not in the original pasted list.",
+    pages: [ig("anti.zionism.australia"), { label: "antizionismaustralia.org", href: "https://www.antizionismaustralia.org/" }] },
+  { id: "glanz", label: "David Glanz", type: "person", handle: "AZA organiser · named in press",
+    blurb: "Named in Age/SMH as Anti-Zionism Australia organiser. FPM has also listed him as Solidarity / RAC / Free Palestine Melbourne.",
+    pages: [{ label: "Anti-Zionism Australia", href: "https://www.antizionismaustralia.org/" }] },
 
   { id: "sit", label: "Sit-Intifada", type: "militant", handle: "@thesitintifada",
     blurb: "Parliament House steps occupation from Oct 2023. Coalition of Islamic, socialist, union, revolutionary groups. Sky / Australian treated them as the violent fringe of Land Forces. Public Google calendar of Melbourne actions. Age: part of the fringe that hijacks Sunday rallies.",
@@ -297,6 +303,12 @@ const nodes = [
 ];
 
 const links = [
+  { source: "aza", target: "glanz", kind: "org", label: "named organiser" },
+  { source: "aza", target: "apan", kind: "org", label: "publicly points people to APAN actions" },
+  { source: "aza", target: "slv", kind: "place", label: "speak-outs / cancelled Bondi-weekend rally" },
+  { source: "aza", target: "parl", kind: "place", label: "Segal/IHRA speak-out" },
+  { source: "glanz", target: "fpm", kind: "org", label: "also listed with FPM" },
+  { source: "glanz", target: "salt", kind: "org", label: "Solidarity (public FPM listing)" },
   { source: "apan", target: "mashni", kind: "org", label: "public face" },
   { source: "mashni", target: "cr3", kind: "media", label: "presents" },
   { source: "fpm", target: "slv", kind: "place", label: "mass rallies" },
